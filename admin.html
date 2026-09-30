@@ -281,16 +281,30 @@
         if (String(orderTypeLabel).includes('กลับ')) isTakeaway = true;
       }
 
+      // FIX: เดิมโชว์แค่ชื่อเมนู+จำนวน ไม่ได้ดึง item.details (เนื้อสัตว์/ไข่/ความหวาน/หมายเหตุ)
+      // ที่หน้าบ้านส่งมาด้วยเลย มาแสดงเลย ทำให้พนักงานไม่รู้ว่าลูกค้าเลือกอะไรมาบ้าง
+      function formatOrderItemLine(item) {
+        if (typeof item !== 'object' || item === null) return `<div style="margin-bottom:6px;">${item}</div>`;
+        const qty = item.amount || item.qty || item.quantity || 1;
+        const name = item.name || item.item_name || 'สินค้า';
+        let line = `<div style="margin-bottom:8px;"><b>${name}</b> (x${qty})`;
+        if (item.details) {
+          line += `<div style="font-size:12px; color:var(--text-sub); margin-top:2px;">${item.details}</div>`;
+        }
+        line += `</div>`;
+        return line;
+      }
+
       let itemsDetail = '-';
       if (typeof ord.items === 'string') {
         itemsDetail = ord.items;
       } else if (Array.isArray(ord.items)) {
-        itemsDetail = ord.items.map(item => typeof item === 'object' ? `${item.name} (x${item.amount || item.qty || 1})` : item).join(', ');
+        itemsDetail = ord.items.map(formatOrderItemLine).join('');
       } else if (ord.items && typeof ord.items === 'object') {
         // FIX: รองรับกรณี items ถูกเก็บเป็น object (เช่น Firebase push key) แทน array
-        itemsDetail = Object.values(ord.items).map(item => typeof item === 'object' ? `${item.name || item.item_name || 'สินค้า'} (x${item.amount || item.qty || item.quantity || 1})` : item).join(', ');
+        itemsDetail = Object.values(ord.items).map(formatOrderItemLine).join('');
       } else if (ord.cart) {
-        itemsDetail = Object.values(ord.cart).map(i => `${i.name} (x${i.qty || 1})`).join(', ');
+        itemsDetail = Object.values(ord.cart).map(formatOrderItemLine).join('');
       }
 
       const rawPrice = ord.total_price ?? ord.totalPrice ?? ord.price ?? ord.total ?? 0;
