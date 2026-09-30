@@ -798,6 +798,17 @@
       padding-bottom: 4px;
     }
 
+    .order-status-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      display: none;
+    }
+    .status-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .status-cooking { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+    .status-completed { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+
     .mobile-cart-bar {
       position: fixed;
       bottom: 15px;
@@ -1802,9 +1813,12 @@
       }
 
       // Push order to Firebase Realtime Database
+      let firebaseOrderKey = null;
       if (typeof window.sendOrderToFirebase === 'function') {
         try {
-          await window.sendOrderToFirebase(orderData);
+          const orderRef = window.sendOrderToFirebase(orderData); // push() ให้ .key มาทันที ไม่ต้องรอ await
+          firebaseOrderKey = orderRef.key;
+          await orderRef; // รอให้เขียนข้อมูลเสร็จจริง
           console.log('Order sent to Firebase successfully');
         } catch (err) {
           console.error('Error sending order to Firebase:', err);
@@ -1824,6 +1838,7 @@
       // รูปสลิปจริงยังถูกส่งไป Firebase ตามปกติในขั้นตอนด้านบนอยู่แล้ว
       try {
         const { slip_image, ...historyEntry } = orderData;
+        historyEntry.firebase_key = firebaseOrderKey; // ใช้ตามไปดึงสถานะสดๆ ตอนเปิดหน้าประวัติ
         let history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
         history.unshift(historyEntry);
         localStorage.setItem('orderHistory', JSON.stringify(history));
@@ -1849,7 +1864,28 @@
       openHistory();
     }
 
+    let historyStatusUnsubscribes = []; // เก็บ unsubscribe ของแต่ละออเดอร์ที่กำลังฟังสถานะอยู่ตอนนี้
+
+    function renderStatusBadge(el, status) {
+      el.style.display = 'inline-block';
+      el.classList.remove('status-pending', 'status-cooking', 'status-completed');
+      if (status === 'completed') {
+        el.innerText = '✅ เสร็จแล้ว';
+        el.classList.add('status-completed');
+      } else if (status === 'cooking') {
+        el.innerText = '🍳 กำลังทำ';
+        el.classList.add('status-cooking');
+      } else {
+        el.innerText = '⏳ รอดำเนินการ';
+        el.classList.add('status-pending');
+      }
+    }
+
     function openHistory() {
+      // เลิกฟังสถานะของรอบก่อนหน้า ก่อนจะผูกใหม่ (กันซ้อน/กันหน่วง)
+      historyStatusUnsubscribes.forEach(unsub => unsub());
+      historyStatusUnsubscribes = [];
+
       const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
       const container = document.getElementById('historyBody');
 
@@ -1860,28 +1896,48 @@
             <p>ยังไม่มีประวัติการสั่งซื้อ</p>
           </div>
         `;
-      } else {
-        container.innerHTML = history.map(order => `
-          <div class="history-card">
-            <div class="history-header">
-              <span>รหัส: ${order.orderId}</span>
-              <span>${order.timestamp}</span>
-            </div>
-            <div style="font-size: 0.85rem; margin-bottom: 6px;">
-              ${order.items.map(i => `<div>• ${i.name} x${i.qty} (${i.details})</div>`).join('')}
-            </div>
-            <div style="text-align: right; font-weight: bold; color: var(--primary); font-size: 0.95rem;">
-              ยอดรวม: ${order.total} ฿
-            </div>
-          </div>
-        `).join('');
+        document.getElementById('historyModal').classList.add('active');
+        return;
       }
 
+      container.innerHTML = history.map((order, idx) => `
+        <div class="history-card">
+          <div class="history-header">
+            <span>รหัส: ${order.orderId}</span>
+            <span>${order.timestamp}</span>
+          </div>
+          <div style="font-size: 0.85rem; margin-bottom: 8px;">
+            ${order.items.map(i => `<div>• ${i.name} x${i.qty} (${i.details})</div>`).join('')}
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="order-status-badge" id="statusBadge_${idx}"></span>
+            <span style="font-weight: bold; color: var(--primary); font-size: 0.95rem;">ยอดรวม: ${order.total} ฿</span>
+          </div>
+        </div>
+      `).join('');
+
       document.getElementById('historyModal').classList.add('active');
+
+      // ผูกสถานะสดๆ ของแต่ละออเดอร์ (path เดียวกับที่หลังบ้านอัปเดตตอนกด "กำลังทำ"/"เสร็จแล้ว")
+      // ออเดอร์เก่าที่สั่งไว้ก่อนอัปเดตรอบนี้จะยังไม่มี firebase_key เก็บไว้ เลยข้ามไปเงียบๆ ไม่ error
+      history.forEach((order, idx) => {
+        if (!order.firebase_key) return;
+        const badge = document.getElementById(`statusBadge_${idx}`);
+        if (!badge) return;
+        const unsub = onValue(ref(database, 'orders/' + order.firebase_key + '/status'), (snapshot) => {
+          renderStatusBadge(badge, snapshot.val() || 'pending');
+        }, (error) => {
+          console.error('Error reading order status:', error);
+        });
+        historyStatusUnsubscribes.push(unsub);
+      });
     }
 
     function closeHistory() {
       document.getElementById('historyModal').classList.remove('active');
+      // เลิกฟัง realtime เมื่อปิดหน้าต่าง จะได้ไม่ค้างเรียกไปเรื่อยๆ เบื้องหลัง
+      historyStatusUnsubscribes.forEach(unsub => unsub());
+      historyStatusUnsubscribes = [];
     }
 
     function showToast(msg) {
