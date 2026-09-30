@@ -1082,6 +1082,16 @@
       return push(ordersRef, orderData);
     };
 
+    // FIX: database/ref/onValue เป็นตัวแปรใน module scope นี้เท่านั้น สคริปต์ตัวถัดไป
+    // (แบบ classic script ที่มี openHistory ฯลฯ) มองไม่เห็น ต้องแปะเป็นฟังก์ชันบน window ให้เรียกใช้ได้
+    window.listenToOrderStatus = function(orderKey, onStatusChange) {
+      return onValue(ref(database, 'orders/' + orderKey + '/status'), (snapshot) => {
+        onStatusChange(snapshot.val());
+      }, (error) => {
+        console.error('Error reading order status:', error);
+      });
+    };
+
     // ===== ระบบตัดสต็อกวัตถุดิบแบบเรียลไทม์ =====
     // แม็ปชื่อเนื้อสัตว์ที่ลูกค้าเลือก -> คีย์สต็อกใน Firebase
     // "ทะเล" ไม่มีสต็อกของตัวเอง แต่หักจาก กุ้ง และ ปลาหมึก อย่างละครึ่งของปริมาณต่อจาน
@@ -1924,10 +1934,9 @@
         if (!order.firebase_key) return;
         const badge = document.getElementById(`statusBadge_${idx}`);
         if (!badge) return;
-        const unsub = onValue(ref(database, 'orders/' + order.firebase_key + '/status'), (snapshot) => {
-          renderStatusBadge(badge, snapshot.val() || 'pending');
-        }, (error) => {
-          console.error('Error reading order status:', error);
+        if (typeof window.listenToOrderStatus !== 'function') return; // เผื่อกรณี module ยังโหลดไม่เสร็จ
+        const unsub = window.listenToOrderStatus(order.firebase_key, (status) => {
+          renderStatusBadge(badge, status || 'pending');
         });
         historyStatusUnsubscribes.push(unsub);
       });
