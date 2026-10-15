@@ -23,13 +23,16 @@
         * { box-sizing: border-box; font-family: 'Prompt', sans-serif; transition: all 0.2s ease; }
         body { background: var(--bg-color); color: var(--text-main); margin: 0; padding: 25px; min-height: 100vh; }
         .container { max-width: 1200px; margin: 0 auto; }
-        
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: var(--card-bg); padding: 18px 25px; border-radius: 16px; border: 1px solid var(--border-line); }
+
+        .header-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; background: var(--card-bg); padding: 18px 25px; border-radius: 16px; border: 1px solid var(--border-line); }
         .brand-title { font-size: 22px; font-weight: 700; color: var(--accent-gold); display: flex; align-items: center; gap: 10px; }
-        
+        .header-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .live-tag { color: var(--accent-green); font-size: 14px; }
+        .logout-btn { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid var(--accent-red); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; }
+
         .grid-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 25px; }
         .card { background: var(--card-bg); border-radius: 16px; padding: 20px; border: 1px solid var(--border-line); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); }
-        
+
         .status-btn { width: 100%; padding: 12px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 16px; margin-top: 10px; }
         .status-btn.is-open { background: var(--accent-green); color: white; }
         .status-btn.is-closed { background: var(--accent-red); color: white; }
@@ -55,34 +58,10 @@
         .btn-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid var(--accent-red); }
 
         .customer-info { line-height: 1.4; }
-        .phone-link { 
-            color: #38bdf8; 
-            font-size: 13px; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 5px; 
-            margin-top: 3px; 
-            font-weight: 500; 
-            text-decoration: none;
-            background: rgba(56, 189, 248, 0.1);
-            padding: 3px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(56, 189, 248, 0.2);
-        }
-        .phone-link:hover {
-            background: rgba(56, 189, 248, 0.25);
-            text-decoration: underline;
-        }
+        .phone-link { color: #38bdf8; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; margin-top: 3px; font-weight: 500; text-decoration: none; background: rgba(56, 189, 248, 0.1); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.2); }
+        .phone-link:hover { background: rgba(56, 189, 248, 0.25); text-decoration: underline; }
+        .no-phone { color: var(--text-sub); font-size: 12px; font-style: italic; display: block; margin-top: 3px; }
 
-        .no-phone {
-            color: var(--text-sub);
-            font-size: 12px;
-            font-style: italic;
-            display: block;
-            margin-top: 3px;
-        }
-
-        /* ===== เพิ่มเติม: สต็อกวัตถุดิบ ===== */
         .stock-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
         .btn-restock { background: linear-gradient(135deg, var(--accent-gold), #b45309); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; }
         .btn-restock:hover { filter: brightness(1.1); }
@@ -101,18 +80,52 @@
         .stock-edit-row button { padding: 6px 10px; border-radius: 8px; border: none; background: var(--accent-blue); color: #fff; font-size: 12px; cursor: pointer; white-space: nowrap; }
         .stock-updated { font-size: 11px; color: var(--text-sub); margin-top: 6px; }
         .stock-note { font-size: 12px; color: var(--text-sub); margin-top: 10px; line-height: 1.6; }
+
+        /* ===== หน้าล็อกอิน ===== */
+        #loginOverlay { position: fixed; inset: 0; background: var(--bg-color); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 999; }
+        .login-box { width: 100%; max-width: 380px; background: var(--card-bg); border: 1px solid var(--border-line); border-radius: 16px; padding: 28px 24px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
+        .login-title { font-size: 20px; font-weight: 700; color: var(--accent-gold); text-align: center; margin-bottom: 6px; }
+        .login-sub { font-size: 13px; color: var(--text-sub); text-align: center; margin-bottom: 22px; }
+        .login-label { font-size: 13px; color: var(--text-sub); margin-bottom: 6px; display: block; }
+        .login-input { width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border-line); background: rgba(0,0,0,0.25); color: var(--text-main); font-size: 15px; margin-bottom: 16px; }
+        .login-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--accent-gold), #b45309); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .login-error { color: #f87171; font-size: 13px; text-align: center; min-height: 20px; margin-top: 12px; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div class="container">
+<!-- หน้าล็อกอิน: แสดงก่อนเข้าหลังบ้านทุกครั้ง -->
+<div id="loginOverlay" class="hidden">
+    <div class="login-box">
+        <div class="login-title"><i class="fa-solid fa-lock"></i> เข้าสู่ระบบหลังบ้าน</div>
+        <div class="login-sub">สำหรับพนักงานและผู้ดูแลร้านเท่านั้น</div>
+        <form id="loginForm" onsubmit="return false;">
+            <label class="login-label" for="loginEmail">อีเมล</label>
+            <input type="email" id="loginEmail" class="login-input" placeholder="name@example.com" autocomplete="username">
+            <label class="login-label" for="loginPassword">รหัสผ่าน</label>
+            <input type="password" id="loginPassword" class="login-input" placeholder="รหัสผ่าน" autocomplete="current-password">
+            <button type="button" id="loginBtn" class="login-btn" onclick="window.doLogin()">
+                <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ
+            </button>
+            <div id="loginError" class="login-error"></div>
+        </form>
+    </div>
+</div>
+
+<!-- แดชบอร์ด: แสดงหลังล็อกอินสำเร็จเท่านั้น -->
+<div class="container hidden" id="dashboard">
     <div class="header-bar">
         <div class="brand-title"><i class="fa-solid fa-crown"></i> MANAGEMENT DASHBOARD</div>
-        <div style="color: var(--accent-green); font-size: 14px;"><i class="fa-solid fa-wifi"></i> Firebase Realtime Live</div>
+        <div class="header-right">
+            <div class="live-tag"><i class="fa-solid fa-wifi"></i> Firebase Realtime Live</div>
+            <span id="currentUser" style="font-size: 13px; color: var(--text-sub);"></span>
+            <button class="logout-btn" onclick="window.doLogout()"><i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ</button>
+        </div>
     </div>
 
     <div class="grid-dashboard">
-        <!-- สวิตช์ เปิด/ปิด ร้าน -->
         <div class="card">
             <div style="color: var(--text-sub); font-size: 14px;">สวิตช์เปิด-ปิดร้านค้า</div>
             <button id="storeToggleBtn" class="status-btn is-open" onclick="window.toggleStoreStatus()">
@@ -120,14 +133,12 @@
             </button>
         </div>
 
-        <!-- ยอดขายประจำวัน -->
         <div class="card">
-            <div style="color: var(--text-sub); font-size: 14px;">ยอดขายรวมประจำวันนี้</div>
+            <div style="color: var(--text-sub); font-size: 14px;">ยอดขายของวันที่เลือก</div>
             <div class="sales-amount"><span id="dailySales">0</span> <span style="font-size: 16px; color: var(--text-sub);">THB</span></div>
         </div>
     </div>
 
-    <!-- คลังวัตถุดิบวันนี้ (Stock) -->
     <div class="card" style="margin-bottom: 25px;">
         <div class="stock-header-row">
             <div class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-boxes-stacked" style="color: var(--accent-gold);"></i> คลังวัตถุดิบวันนี้</div>
@@ -142,7 +153,13 @@
         </div>
     </div>
 
-    <!-- ตารางรายการออเดอร์ปัจจุบัน -->
+    <div class="card" style="margin-bottom: 25px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <div class="section-title" style="margin-bottom: 0;"><i class="fa-solid fa-calendar-day" style="color: var(--accent-blue);"></i> ดูออเดอร์ตามวันที่</div>
+        <input type="date" id="orderDatePicker" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-line); background: rgba(0,0,0,0.25); color: var(--text-main); font-size: 14px;">
+        <button class="btn btn-cooking" onclick="window.setToday()">วันนี้</button>
+        <span id="dateSummary" style="color: var(--text-sub); font-size: 13px;"></span>
+    </div>
+
     <div class="card" style="margin-bottom: 25px;">
         <div class="section-title"><i class="fa-solid fa-fire-burner" style="color: var(--accent-gold);"></i> รายการออเดอร์ปัจจุบัน (กำลังทำ)</div>
         <table>
@@ -162,7 +179,6 @@
         </table>
     </div>
 
-    <!-- ตารางประวัติออเดอร์ -->
     <div class="card">
         <div class="section-title"><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-green);"></i> ประวัติออเดอร์ที่สำเร็จแล้ว</div>
         <table>
@@ -183,9 +199,22 @@
     </div>
 </div>
 
+<!-- หน้าต่างดูสลิปโอนเงิน -->
+<div id="slipModal" class="hidden" onclick="window.closeSlip()" style="position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 1000;">
+    <div onclick="event.stopPropagation()" style="width: 100%; max-width: 480px; background: var(--card-bg); border: 1px solid var(--border-line); border-radius: 16px; padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <b>สลิปโอนเงิน</b>
+            <button class="btn btn-danger" onclick="window.closeSlip()">ปิด</button>
+        </div>
+        <div id="slipBody" style="text-align: center; color: var(--text-sub);">กำลังโหลด...</div>
+    </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getDatabase, ref, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getStorage, ref as storageRef, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBLdWGUZT0ktuqE1pWHVDdXAHAoGD_j3Jk",
@@ -199,251 +228,375 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
 
   let isStoreOpen = true;
+  let dashboardStarted = false;
 
-  // 1. ฟังค่าสถานะเปิด-ปิดร้าน
-  onValue(ref(db, 'store_status/is_open'), (snapshot) => {
-    const val = snapshot.val();
-    // FIX: ถ้ายังไม่เคยมีการตั้งค่านี้ในฐานข้อมูลเลย (val เป็น null) ให้ถือว่าร้าน "เปิด" เป็นค่าเริ่มต้น
-    isStoreOpen = (val === null || val === undefined) ? true : (val === true || val === "true");
-    
-    const btn = document.getElementById('storeToggleBtn');
-    if (isStoreOpen) {
-      btn.innerText = "🟢 ร้านกำลังเปิดอยู่ (คลิกเพื่อปิด)";
-      btn.className = "status-btn is-open";
-    } else {
-      btn.innerText = "🔴 ร้านปิดอยู่ (คลิกเพื่อเปิด)";
-      btn.className = "status-btn is-closed";
-    }
-  }, (error) => {
-    // FIX: เดิมไม่มี error handler เลย ถ้า Firebase อ่านค่าไม่ได้ (เช่น permission denied
-    // หรือเน็ตหลุด) ปุ่มจะค้างที่ "กำลังโหลด..." ตลอดไปโดยไม่มีทางรู้สาเหตุ
-    console.error('Error reading store_status:', error);
-    const btn = document.getElementById('storeToggleBtn');
-    btn.innerText = "⚠️ เชื่อมต่อไม่ได้ (แตะเพื่อลองใหม่)";
-    btn.className = "status-btn is-closed";
-  });
+  // ออเดอร์ล่าสุดทั้งหมดจาก Firebase (เก็บไว้ใช้กรองตามวันและเปิดดูสลิป)
+  let latestOrders = {};
 
-  // FIX: เผื่อกรณี onValue ไม่ยิง callback เลยด้วยเหตุผลอื่นๆ ตั้ง fallback ไว้
-  // ถ้าผ่านไป 6 วินาทีแล้วปุ่มยังค้างที่ "กำลังโหลด..." ให้แจ้งเตือนแทนการค้างตลอดไป
-  setTimeout(() => {
-    const btn = document.getElementById('storeToggleBtn');
-    if (btn && btn.innerText.includes('กำลังโหลด')) {
-      btn.innerText = "⚠️ เชื่อมต่อฐานข้อมูลไม่ได้ (แตะเพื่อลองใหม่)";
-      btn.className = "status-btn is-closed";
-    }
-  }, 6000);
+  // แปลง timestamp เป็นวันที่ตามเวลาไทย รูปแบบ YYYY-MM-DD
+  function bangkokDateKey(ms) {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok' }).format(new Date(ms));
+  }
 
-  window.toggleStoreStatus = function() {
-    set(ref(db, 'store_status/is_open'), !isStoreOpen);
+  // ออเดอร์ใหม่มีฟิลด์ date อยู่แล้ว ส่วนออเดอร์เก่าที่ไม่มีฟิลด์นี้ ใช้ createdAt คำนวณแทน
+  function getDayKey(ord) {
+    if (ord.date) return ord.date;
+    return ord.createdAt ? bangkokDateKey(ord.createdAt) : '';
+  }
+
+  // ===== ล็อกอิน / ออกจากระบบ =====
+  const AUTH_ERRORS = {
+    'auth/invalid-email': 'รูปแบบอีเมลไม่ถูกต้อง',
+    'auth/missing-password': 'กรุณากรอกรหัสผ่าน',
+    'auth/invalid-credential': 'อีเมลหรือรหัสผ่านไม่ถูกต้อง',
+    'auth/user-not-found': 'ไม่พบบัญชีนี้ในระบบ',
+    'auth/wrong-password': 'รหัสผ่านไม่ถูกต้อง',
+    'auth/too-many-requests': 'ล็อกอินผิดหลายครั้งเกินไป กรุณารอสักครู่แล้วลองใหม่',
+    'auth/network-request-failed': 'เชื่อมต่ออินเทอร์เน็ตไม่ได้ กรุณาลองใหม่'
   };
 
-  // 2. ฟังออเดอร์ Realtime
-  onValue(ref(db, 'orders'), (snapshot) => {
-    const data = snapshot.val();
-    const activeList = document.getElementById('activeOrderList');
-    const historyList = document.getElementById('historyOrderList');
-    let totalSales = 0;
+  window.doLogin = async function() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errBox = document.getElementById('loginError');
+    const btn = document.getElementById('loginBtn');
+    errBox.innerText = '';
 
-    if (!data) {
-      activeList.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-sub);">ยังไม่มีออเดอร์เข้ามา</td></tr>';
-      historyList.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-sub);">ไม่มีประวัติออเดอร์</td></tr>';
-      document.getElementById('dailySales').innerText = '0';
+    if (!email || !password) {
+      errBox.innerText = 'กรุณากรอกอีเมลและรหัสผ่าน';
       return;
     }
 
-    let activeHtml = '';
-    let historyHtml = '';
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังเข้าสู่ระบบ...';
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      document.getElementById('loginPassword').value = '';
+    } catch (err) {
+      console.error('Login error:', err);
+      errBox.innerText = AUTH_ERRORS[err.code] || 'เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่';
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ';
+    }
+  };
 
-    Object.keys(data).reverse().forEach(key => {
-      const ord = data[key];
-      
-      const customerName = ord.customer_name || ord.customerName || ord.name || ord.custName || ord.table || 'ไม่ระบุชื่อ/โต๊ะ';
-      const rawPhone = ord.phone || ord.tel || ord.mobile || ord.phone_number || ord.phoneNumber || ord.telephone || ord.customer_phone || ord.customerPhone || ord.contact || '';
-      const cleanPhone = String(rawPhone).replace(/[^0-9+]/g, '');
-      
-      const rawType = String(ord.order_type ?? ord.orderType ?? ord.type ?? ord.serviceType ?? ord.diningOption ?? ord.option ?? ord.eat_type ?? '').toLowerCase().trim();
-      
-      let orderTypeLabel = '🍽️ ทานที่ร้าน';
-      let isTakeaway = false;
+  window.doLogout = async function() {
+    if (!confirm('ต้องการออกจากระบบใช่ไหม?')) return;
+    await signOut(auth);
+  };
 
-      if (rawType.includes('take') || rawType.includes('home') || rawType.includes('กลับบ้าน') || rawType.includes('delivery') || rawType === '2' || rawType === 'false') {
-        orderTypeLabel = '🛍️ กลับบ้าน';
-        isTakeaway = true;
-      } else if (rawType.includes('dine') || rawType.includes('eat') || rawType.includes('ร้าน') || rawType.includes('here') || rawType === '1' || rawType === 'true') {
-        orderTypeLabel = '🍽️ ทานที่ร้าน';
-        isTakeaway = false;
-      } else if (rawType !== '') {
-        // FIX: fallback fields อาจไม่มีค่าเลยสักตัว (ทำให้ได้ undefined) ก่อนหน้านี้โค้ดเรียก
-        // .includes() บน undefined ตรงนี้ ทำให้ error กลาง forEach และตารางค้างที่ "กำลังโหลดข้อมูล..." ตลอดไป
-        orderTypeLabel = ord.order_type || ord.orderType || ord.type || ord.diningOption || rawType;
-        if (String(orderTypeLabel).includes('กลับ')) isTakeaway = true;
+  // Enter เพื่อเข้าสู่ระบบ
+  document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') window.doLogin();
+  });
+
+  // ตรวจสถานะล็อกอินทุกครั้งที่เปิดหน้า/เปลี่ยนสถานะ
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById('loginOverlay').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.getElementById('currentUser').innerText = user.email;
+      if (!dashboardStarted) {
+        dashboardStarted = true;
+        startDashboard();
       }
+    } else {
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('loginOverlay').classList.remove('hidden');
+    }
+  });
 
-      // FIX: เดิมโชว์แค่ชื่อเมนู+จำนวน ไม่ได้ดึง item.details (เนื้อสัตว์/ไข่/ความหวาน/หมายเหตุ)
-      // ที่หน้าบ้านส่งมาด้วยเลย มาแสดงเลย ทำให้พนักงานไม่รู้ว่าลูกค้าเลือกอะไรมาบ้าง
-      function formatOrderItemLine(item) {
-        if (typeof item !== 'object' || item === null) return `<div style="margin-bottom:6px;">${item}</div>`;
-        const qty = item.amount || item.qty || item.quantity || 1;
-        const name = item.name || item.item_name || 'สินค้า';
-        let line = `<div style="margin-bottom:8px;"><b>${name}</b> (x${qty})`;
-        if (item.details) {
-          line += `<div style="font-size:12px; color:var(--text-sub); margin-top:2px;">${item.details}</div>`;
-        }
-        line += `</div>`;
-        return line;
-      }
+  // ===== เริ่มฟังข้อมูลหลังล็อกอินสำเร็จเท่านั้น =====
+  function startDashboard() {
+    // 1. สถานะเปิด-ปิดร้าน
+    onValue(ref(db, 'store_status/is_open'), (snapshot) => {
+      const val = snapshot.val();
+      isStoreOpen = (val === null || val === undefined) ? true : (val === true || val === "true");
 
-      let itemsDetail = '-';
-      if (typeof ord.items === 'string') {
-        itemsDetail = ord.items;
-      } else if (Array.isArray(ord.items)) {
-        itemsDetail = ord.items.map(formatOrderItemLine).join('');
-      } else if (ord.items && typeof ord.items === 'object') {
-        // FIX: รองรับกรณี items ถูกเก็บเป็น object (เช่น Firebase push key) แทน array
-        itemsDetail = Object.values(ord.items).map(formatOrderItemLine).join('');
-      } else if (ord.cart) {
-        itemsDetail = Object.values(ord.cart).map(formatOrderItemLine).join('');
-      }
-
-      const rawPrice = ord.total_price ?? ord.totalPrice ?? ord.price ?? ord.total ?? 0;
-      // FIX: ถ้าราคาไม่ใช่ตัวเลขล้วน Number() จะได้ NaN แล้วลามไปทำให้ยอดขายรวมทั้งวันกลายเป็น NaN
-      const price = Number(rawPrice) || 0;
-
-      totalSales += price;
-
-      let phoneHTML = '<span class="no-phone"><i class="fa-solid fa-phone-slash"></i> ไม่ระบุเบอร์</span>';
-      if (cleanPhone) {
-        phoneHTML = `<a href="tel:${cleanPhone}" class="phone-link"><i class="fa-solid fa-phone"></i> ${rawPhone}</a>`;
-      }
-
-      const customerHTML = `
-        <div class="customer-info">
-          <b>${customerName}</b><br>
-          ${phoneHTML}
-        </div>
-      `;
-
-      const typeBadgeClass = isTakeaway ? 'badge-takeaway' : 'badge-dinein';
-      const typeBadge = `<span class="badge ${typeBadgeClass}">${orderTypeLabel}</span>`;
-
-      if (ord.status !== 'completed') {
-        let badge = '<span class="badge badge-pending">รอดำเนินการ</span>';
-        if (ord.status === 'cooking') badge = '<span class="badge badge-cooking">กำลังทำ</span>';
-
-        activeHtml += `<tr>
-          <td>${customerHTML}</td>
-          <td>${typeBadge}</td>
-          <td>${itemsDetail}</td>
-          <td><b style="color:var(--accent-gold); font-size: 15px;">${price.toLocaleString()} บ.</b></td>
-          <td>${badge}</td>
-          <td>
-            <button class="btn btn-cooking" onclick="window.updateOrderStatus('${key}', 'cooking')">🍳 กำลังทำ</button>
-            <button class="btn btn-success" onclick="window.updateOrderStatus('${key}', 'completed')">✅ เสร็จแล้ว</button>
-          </td>
-        </tr>`;
+      const btn = document.getElementById('storeToggleBtn');
+      if (isStoreOpen) {
+        btn.innerText = "🟢 ร้านกำลังเปิดอยู่ (คลิกเพื่อปิด)";
+        btn.className = "status-btn is-open";
       } else {
-        historyHtml += `<tr>
-          <td>${customerHTML}</td>
-          <td>${typeBadge}</td>
-          <td>${itemsDetail}</td>
-          <td><b>${price.toLocaleString()} บ.</b></td>
-          <td><span class="badge badge-completed">สำเร็จแล้ว</span></td>
-          <td>
-            <button class="btn btn-danger" onclick="window.deleteOrder('${key}')"><i class="fa-solid fa-trash"></i> ลบ</button>
-          </td>
-        </tr>`;
+        btn.innerText = "🔴 ร้านปิดอยู่ (คลิกเพื่อเปิด)";
+        btn.className = "status-btn is-closed";
       }
+    }, (error) => {
+      console.error('Error reading store_status:', error);
+      const btn = document.getElementById('storeToggleBtn');
+      btn.innerText = "⚠️ เชื่อมต่อไม่ได้ (แตะเพื่อลองใหม่)";
+      btn.className = "status-btn is-closed";
     });
 
-    activeList.innerHTML = activeHtml || '<tr><td colspan="6" style="text-align:center; color: var(--text-sub);">ไม่มีออเดอร์ค้างอยู่</td></tr>';
-    historyList.innerHTML = historyHtml || '<tr><td colspan="6" style="text-align:center; color: var(--text-sub);">ยังไม่มีประวัติออเดอร์ที่เสร็จแล้ว</td></tr>';
-    document.getElementById('dailySales').innerText = totalSales.toLocaleString();
-  });
+    setTimeout(() => {
+      const btn = document.getElementById('storeToggleBtn');
+      if (btn && btn.innerText.includes('กำลังโหลด')) {
+        btn.innerText = "⚠️ เชื่อมต่อฐานข้อมูลไม่ได้ (แตะเพื่อลองใหม่)";
+        btn.className = "status-btn is-closed";
+      }
+    }, 6000);
+
+    // 2. ออเดอร์ Realtime: รับข้อมูลทั้งหมดมาเก็บไว้ แล้วให้ renderOrders() กรองตามวันที่ที่เลือก
+    const picker = document.getElementById('orderDatePicker');
+    if (!picker.value) picker.value = bangkokDateKey(Date.now());
+    picker.addEventListener('change', renderOrders);
+
+    onValue(ref(db, 'orders'), (snapshot) => {
+      latestOrders = snapshot.val() || {};
+      renderOrders();
+    }, (error) => {
+      console.error('Error reading orders:', error);
+    });
+
+    function renderOrders() {
+      const data = latestOrders;
+      const activeList = document.getElementById('activeOrderList');
+      const historyList = document.getElementById('historyOrderList');
+      let totalSales = 0;
+
+      if (!data) {
+        activeList.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-sub);">ยังไม่มีออเดอร์เข้ามา</td></tr>';
+        historyList.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-sub);">ไม่มีประวัติออเดอร์</td></tr>';
+        document.getElementById('dailySales').innerText = '0';
+        return;
+      }
+
+      let activeHtml = '';
+      let historyHtml = '';
+
+      // กรองเฉพาะออเดอร์ของวันที่เลือก (วันใหม่จะว่าง ส่วนวันเก่ายังเห็นออเดอร์เดิม)
+      const selectedDay = picker.value;
+      const dayKeys = Object.keys(data).filter(k => getDayKey(data[k]) === selectedDay).reverse();
+      document.getElementById('dateSummary').innerText = `วันที่เลือกมี ${dayKeys.length} ออเดอร์`;
+
+      dayKeys.forEach(key => {
+        const ord = data[key];
+
+        const customerName = ord.customer_name || ord.customerName || ord.name || 'ไม่ระบุชื่อ';
+        const rawPhone = ord.phone || '';
+        const cleanPhone = String(rawPhone).replace(/[^0-9+]/g, '');
+
+        const rawType = String(ord.order_type ?? '').toLowerCase().trim();
+        let orderTypeLabel = '🍽️ ทานที่ร้าน';
+        let isTakeaway = false;
+        if (rawType === 'takeaway') {
+          orderTypeLabel = '🛍️ กลับบ้าน';
+          isTakeaway = true;
+        }
+
+        // วิธีชำระเงิน (ออเดอร์เก่าที่ไม่มีค่านี้ จะถือว่าโอน)
+        const isCash = ord.payment_method === 'cash';
+        const payBadgeClass = isCash ? 'badge-pending' : 'badge-completed';
+        const payLabel = isCash ? '💵 เงินสด' : '✅ ชำระเงินแล้ว';
+
+        function formatOrderItemLine(item) {
+          if (typeof item !== 'object' || item === null) return `<div style="margin-bottom:6px;">${item}</div>`;
+          const qty = item.amount || item.qty || item.quantity || 1;
+          const name = item.name || item.item_name || 'สินค้า';
+          let line = `<div style="margin-bottom:8px;"><b>${name}</b> (x${qty})`;
+          if (item.details) {
+            line += `<div style="font-size:12px; color:var(--text-sub); margin-top:2px;">${item.details}</div>`;
+          }
+          line += `</div>`;
+          return line;
+        }
+
+        let itemsDetail = '-';
+        if (Array.isArray(ord.items)) {
+          itemsDetail = ord.items.map(formatOrderItemLine).join('');
+        } else if (ord.items && typeof ord.items === 'object') {
+          itemsDetail = Object.values(ord.items).map(formatOrderItemLine).join('');
+        }
+
+        const price = Number(ord.total ?? ord.total_price ?? ord.totalPrice ?? ord.price ?? 0) || 0;
+        totalSales += price;
+
+        let phoneHTML = '<span class="no-phone"><i class="fa-solid fa-phone-slash"></i> ไม่ระบุเบอร์</span>';
+        if (cleanPhone) {
+          phoneHTML = `<a href="tel:${cleanPhone}" class="phone-link"><i class="fa-solid fa-phone"></i> ${rawPhone}</a>`;
+        }
+
+        const customerHTML = `
+          <div class="customer-info">
+            <b>${customerName}</b><br>
+            ${phoneHTML}
+          </div>
+        `;
+
+        const typeBadgeClass = isTakeaway ? 'badge-takeaway' : 'badge-dinein';
+        // ปุ่มดูสลิป (เฉพาะออเดอร์โอนเงิน)
+        const slipBtn = isCash ? '' : `<button class="btn" style="background:#0ea5e9; color:#fff;" onclick="window.showSlip('${key}')"><i class="fa-solid fa-receipt"></i> สลิป</button>`;
+        const typeBadge = `<span class="badge ${typeBadgeClass}">${orderTypeLabel}</span><br><span class="badge ${payBadgeClass}">${payLabel}</span>`;
+
+        if (ord.status !== 'completed') {
+          let badge = '<span class="badge badge-pending">รอดำเนินการ</span>';
+          if (ord.status === 'cooking') badge = '<span class="badge badge-cooking">กำลังทำ</span>';
+
+          activeHtml += `<tr>
+            <td>${customerHTML}</td>
+            <td>${typeBadge}</td>
+            <td>${itemsDetail}</td>
+            <td><b style="color:var(--accent-gold); font-size: 15px;">${price.toLocaleString()} บ.</b></td>
+            <td>${badge}</td>
+            <td>
+              <button class="btn btn-cooking" onclick="window.updateOrderStatus('${key}', 'cooking')">🍳 กำลังทำ</button>
+              <button class="btn btn-success" onclick="window.updateOrderStatus('${key}', 'completed')">✅ เสร็จแล้ว</button>
+              ${slipBtn}
+            </td>
+          </tr>`;
+        } else {
+          historyHtml += `<tr>
+            <td>${customerHTML}</td>
+            <td>${typeBadge}</td>
+            <td>${itemsDetail}</td>
+            <td><b>${price.toLocaleString()} บ.</b></td>
+            <td><span class="badge badge-completed">สำเร็จแล้ว</span></td>
+            <td>
+              ${slipBtn}
+              <button class="btn btn-danger" onclick="window.deleteOrder('${key}')"><i class="fa-solid fa-trash"></i> ลบ</button>
+            </td>
+          </tr>`;
+        }
+      });
+
+      activeList.innerHTML = activeHtml || '<tr><td colspan="6" style="text-align:center; color: var(--text-sub);">ไม่มีออเดอร์ค้างอยู่</td></tr>';
+      historyList.innerHTML = historyHtml || '<tr><td colspan="6" style="text-align:center; color: var(--text-sub);">ยังไม่มีประวัติออเดอร์ที่เสร็จแล้ว</td></tr>';
+      document.getElementById('dailySales').innerText = totalSales.toLocaleString();
+    }
+
+    // 3. คลังวัตถุดิบ
+    const MEAT_TYPES = [
+      { key: 'pork_slice', name: 'หมูชิ้น' },
+      { key: 'pork_minced', name: 'หมูสับ' },
+      { key: 'chicken', name: 'ไก่' },
+      { key: 'beef', name: 'เนื้อวัว' },
+      { key: 'shrimp', name: 'กุ้ง' },
+      { key: 'squid', name: 'ปลาหมึก' }
+    ];
+    const DAILY_STOCK_GRAMS = 1000;
+
+    function fmtStockTime(ts) {
+      if (!ts) return 'ยังไม่เคยอัปเดต';
+      try { return new Date(ts).toLocaleString('th-TH'); } catch (e) { return '-'; }
+    }
+
+    onValue(ref(db, 'stock'), (snapshot) => {
+      const data = snapshot.val() || {};
+      const grid = document.getElementById('stockGrid');
+      grid.innerHTML = MEAT_TYPES.map(meat => {
+        const item = data[meat.key] || { remaining_grams: DAILY_STOCK_GRAMS, updated_at: null };
+        const remaining = typeof item.remaining_grams === 'number' ? item.remaining_grams : DAILY_STOCK_GRAMS;
+        const pct = Math.max(0, Math.min(100, (remaining / DAILY_STOCK_GRAMS) * 100));
+        let fillClass = 'stock-fill-ok';
+        if (remaining < 150) fillClass = 'stock-fill-low';
+        else if (remaining < 400) fillClass = 'stock-fill-warn';
+
+        return `
+          <div class="stock-item">
+            <div class="stock-item-top">
+              <span class="stock-item-name">${meat.name}</span>
+              <span class="stock-item-amount">${remaining.toLocaleString()} / ${DAILY_STOCK_GRAMS} ก.</span>
+            </div>
+            <div class="stock-bar-track">
+              <div class="stock-bar-fill ${fillClass}" style="width:${pct}%;"></div>
+            </div>
+            <div class="stock-edit-row">
+              <input type="number" id="stockInput_${meat.key}" placeholder="แก้เป็น (กรัม)">
+              <button onclick="window.setStockValue('${meat.key}', '${meat.name}')">บันทึก</button>
+            </div>
+            <div class="stock-updated">อัปเดตล่าสุด: ${fmtStockTime(item.updated_at)}</div>
+          </div>
+        `;
+      }).join('');
+    }, (error) => {
+      console.error('Error reading stock:', error);
+      document.getElementById('stockGrid').innerHTML = '<div style="color:var(--accent-red);">⚠️ โหลดข้อมูลสต็อกไม่สำเร็จ</div>';
+    });
+
+    window.setStockValue = function(key, name) {
+      const input = document.getElementById('stockInput_' + key);
+      const val = parseInt(input.value, 10);
+      if (isNaN(val) || val < 0) {
+        alert('กรุณากรอกจำนวนกรัมเป็นตัวเลขที่ถูกต้อง');
+        return;
+      }
+      update(ref(db, 'stock/' + key), { name: name, remaining_grams: val, unit: 'g', updated_at: Date.now() })
+        .then(() => { input.value = ''; })
+        .catch((err) => { console.error('Error updating stock:', err); alert('บันทึกไม่สำเร็จ'); });
+    };
+
+    window.resetMorningStock = function() {
+      if (!confirm('ยืนยันเติมสต็อกเช้าใหม่? ระบบจะตั้งเนื้อสัตว์ทุกชนิดกลับเป็น 1,000 กรัม (ค่าเดิมจะถูกเขียนทับ)')) return;
+      const updates = {};
+      MEAT_TYPES.forEach(meat => {
+        updates['stock/' + meat.key] = { name: meat.name, remaining_grams: DAILY_STOCK_GRAMS, unit: 'g', updated_at: Date.now() };
+      });
+      update(ref(db), updates)
+        .then(() => alert('เติมสต็อกเช้าใหม่เรียบร้อยแล้ว ✅'))
+        .catch((err) => { console.error('Error resetting stock:', err); alert('เติมสต็อกไม่สำเร็จ กรุณาลองใหม่'); });
+    };
+  }
+
+  // ===== ฟังก์ชันจัดการสถานะ/ลบ/เปิดปิดร้าน =====
+  window.toggleStoreStatus = function() {
+    set(ref(db, 'store_status/is_open'), !isStoreOpen);
+  };
 
   window.updateOrderStatus = function(key, newStatus) {
     update(ref(db, 'orders/' + key), { status: newStatus });
   };
 
   window.deleteOrder = function(key) {
-    if(confirm('ต้องการลบประวัติออเดอร์นี้ใช่ไหม?')) {
+    if (confirm('ต้องการลบประวัติออเดอร์นี้ใช่ไหม?')) {
       remove(ref(db, 'orders/' + key));
     }
   };
-
-  // ===== คลังวัตถุดิบ (Stock) =====
-  const MEAT_TYPES = [
-    { key: 'pork_slice', name: 'หมูชิ้น' },
-    { key: 'pork_minced', name: 'หมูสับ' },
-    { key: 'chicken', name: 'ไก่' },
-    { key: 'beef', name: 'เนื้อวัว' },
-    { key: 'shrimp', name: 'กุ้ง' },
-    { key: 'squid', name: 'ปลาหมึก' }
-  ];
-  const DAILY_STOCK_GRAMS = 1000;
-
-  function fmtStockTime(ts) {
-    if (!ts) return 'ยังไม่เคยอัปเดต';
-    try { return new Date(ts).toLocaleString('th-TH'); } catch (e) { return '-'; }
-  }
-
-  onValue(ref(db, 'stock'), (snapshot) => {
-    const data = snapshot.val() || {};
-    const grid = document.getElementById('stockGrid');
-    grid.innerHTML = MEAT_TYPES.map(meat => {
-      const item = data[meat.key] || { remaining_grams: DAILY_STOCK_GRAMS, updated_at: null };
-      const remaining = typeof item.remaining_grams === 'number' ? item.remaining_grams : DAILY_STOCK_GRAMS;
-      const pct = Math.max(0, Math.min(100, (remaining / DAILY_STOCK_GRAMS) * 100));
-      let fillClass = 'stock-fill-ok';
-      if (remaining < 150) fillClass = 'stock-fill-low';
-      else if (remaining < 400) fillClass = 'stock-fill-warn';
-
-      return `
-        <div class="stock-item">
-          <div class="stock-item-top">
-            <span class="stock-item-name">${meat.name}</span>
-            <span class="stock-item-amount">${remaining.toLocaleString()} / ${DAILY_STOCK_GRAMS} ก.</span>
-          </div>
-          <div class="stock-bar-track">
-            <div class="stock-bar-fill ${fillClass}" style="width:${pct}%;"></div>
-          </div>
-          <div class="stock-edit-row">
-            <input type="number" id="stockInput_${meat.key}" placeholder="แก้เป็น (กรัม)">
-            <button onclick="window.setStockValue('${meat.key}', '${meat.name}')">บันทึก</button>
-          </div>
-          <div class="stock-updated">อัปเดตล่าสุด: ${fmtStockTime(item.updated_at)}</div>
-        </div>
-      `;
-    }).join('');
-  }, (error) => {
-    console.error('Error reading stock:', error);
-    document.getElementById('stockGrid').innerHTML = '<div style="color:var(--accent-red);">⚠️ โหลดข้อมูลสต็อกไม่สำเร็จ</div>';
-  });
-
-  // แก้ไขจำนวนคงเหลือด้วยมือ (เช่น กรณีนับสต็อกจริงแล้วไม่ตรง)
-  window.setStockValue = function(key, name) {
-    const input = document.getElementById('stockInput_' + key);
-    const val = parseInt(input.value, 10);
-    if (isNaN(val) || val < 0) {
-      alert('กรุณากรอกจำนวนกรัมเป็นตัวเลขที่ถูกต้อง');
-      return;
-    }
-    update(ref(db, 'stock/' + key), { name: name, remaining_grams: val, unit: 'g', updated_at: Date.now() })
-      .then(() => { input.value = ''; })
-      .catch((err) => { console.error('Error updating stock:', err); alert('บันทึกไม่สำเร็จ'); });
+  // ===== ปุ่มวันนี้ + เปิดดูสลิป =====
+  window.setToday = function() {
+    document.getElementById('orderDatePicker').value = bangkokDateKey(Date.now());
+    document.getElementById('orderDatePicker').dispatchEvent(new Event('change'));
   };
 
-  // ปุ่มเติมสต็อกตอนเช้า: ตั้งทุกชนิดกลับเป็น 1000 กรัม (ของที่ซื้อมาใหม่ทุกวัน)
-  window.resetMorningStock = function() {
-    if (!confirm('ยืนยันเติมสต็อกเช้าใหม่? ระบบจะตั้งเนื้อสัตว์ทุกชนิดกลับเป็น 1,000 กรัม (ค่าเดิมจะถูกเขียนทับ)')) return;
-    const updates = {};
-    MEAT_TYPES.forEach(meat => {
-      updates['stock/' + meat.key] = { name: meat.name, remaining_grams: DAILY_STOCK_GRAMS, unit: 'g', updated_at: Date.now() };
-    });
-    update(ref(db), updates)
-      .then(() => alert('เติมสต็อกเช้าใหม่เรียบร้อยแล้ว ✅'))
-      .catch((err) => { console.error('Error resetting stock:', err); alert('เติมสต็อกไม่สำเร็จ กรุณาลองใหม่'); });
+  window.showSlip = async function(key) {
+    const ord = latestOrders[key] || {};
+    const modal = document.getElementById('slipModal');
+    const body = document.getElementById('slipBody');
+    modal.classList.remove('hidden');
+    body.innerHTML = 'กำลังโหลดสลิป...';
+
+    try {
+      let src = null;
+      if (ord.slip_path) {
+        // ออเดอร์ใหม่: ดาวน์โหลด URL จาก Firebase Storage (ต้องล็อกอินก่อน)
+        src = await getDownloadURL(storageRef(storage, ord.slip_path));
+      } else if (ord.slip_image) {
+        // ออเดอร์เก่า: สลิปเป็น base64 ในฐานข้อมูล
+        src = ord.slip_image;
+      }
+
+      if (!src) {
+        body.innerHTML = 'ไม่พบสลิปของออเดอร์นี้';
+        return;
+      }
+      body.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = 'สลิปโอนเงิน';
+      img.style.cssText = 'width: 100%; border-radius: 10px;';
+      body.appendChild(img);
+    } catch (err) {
+      console.error('Error loading slip:', err);
+      body.innerHTML = '⚠️ โหลดสลิปไม่สำเร็จ';
+    }
+  };
+
+  window.closeSlip = function() {
+    document.getElementById('slipModal').classList.add('hidden');
   };
 </script>
 

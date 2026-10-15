@@ -987,7 +987,7 @@
         </div>
         <div class="option-group">
           <div class="option-title">เบอร์โทรศัพท์</div>
-          <input type="tel" class="text-input" id="custPhoneInput" placeholder="0812345678">
+          <input type="tel" class="text-input" id="custPhoneInput" placeholder="0812345678" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
         </div>
         <div class="option-group">
           <div class="option-title">รับอาหารแบบไหน</div>
@@ -999,6 +999,19 @@
             <div class="option-item">
               <input type="radio" name="orderType" id="orderTypeTakeaway" value="takeaway">
               <label for="orderTypeTakeaway" class="option-label">🛍️ กลับบ้าน</label>
+            </div>
+          </div>
+        </div>
+        <div class="option-group">
+          <div class="option-title">วิธีชำระเงิน</div>
+          <div class="option-grid">
+            <div class="option-item">
+              <input type="radio" name="payMethod" id="payTransfer" value="transfer" checked>
+              <label for="payTransfer" class="option-label">📱 โอน / QR PromptPay</label>
+            </div>
+            <div class="option-item">
+              <input type="radio" name="payMethod" id="payCash" value="cash">
+              <label for="payCash" class="option-label">💵 เงินสด</label>
             </div>
           </div>
         </div>
@@ -1015,18 +1028,20 @@
   <div class="modal-backdrop" id="checkoutModal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-qrcode" style="color: var(--primary);"></i> ชำระเงินด้วย PromptPay</h3>
+        <h3 id="checkoutTitle"><i class="fa-solid fa-qrcode" style="color: var(--primary);"></i> ชำระเงินด้วย PromptPay</h3>
         <button class="btn-close" onclick="closeCheckoutModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <div class="qr-container">
+        <div style="text-align:center; padding: 12px 0;">
+          <div style="font-size: 1.2rem; font-weight: bold; color: var(--primary);" id="checkoutTotalText">0 ฿</div>
+        </div>
+        <div class="qr-container" id="qrContainer">
           <p style="font-size: 0.88rem; color: var(--text-muted);">สแกน QR Code ด้านล่างเพื่อชำระเงิน</p>
           <img id="qrImage" src="" alt="PromptPay QR Code" class="qr-img">
-          <div style="font-size: 1.2rem; font-weight: bold; color: var(--primary);" id="checkoutTotalText">0 ฿</div>
           <p style="font-size: 0.8rem; color: var(--text-muted);">เบอร์พร้อมเพย์: 081-907-7556 (แม่ค้า)</p>
         </div>
 
-        <div class="option-group" style="margin-top: 8px;">
+        <div class="option-group" id="slipGroup" style="margin-top: 8px;">
           <div class="option-title">แนบสลิปโอนเงิน <span>(บังคับ)</span></div>
           <input type="file" accept="image/*" id="slipInput" style="display:none" onchange="handleSlipUpload(event)">
           <button type="button" class="btn-submit" style="width:100%; justify-content:center;" onclick="document.getElementById('slipInput').click()">
@@ -1059,7 +1074,7 @@
   <!-- Firebase Realtime SDK Integration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, set, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBLdWGUZT0ktuqE1pWHVDdXAHAoGD_j3Jk",
@@ -1076,10 +1091,14 @@
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-    // Export Firebase Push function to global scope for confirmOrder()
-    window.sendOrderToFirebase = function(orderData) {
-      const ordersRef = ref(database, 'orders');
-      return push(ordersRef, orderData);
+    // ขอ key ของออเดอร์ล่วงหน้า (push โดยไม่ใส่ข้อมูล = ยังไม่เขียนอะไรลง Database)
+    window.newOrderKey = function() {
+      return push(ref(database, 'orders')).key;
+    };
+
+    // เขียนออเดอร์ลง orders/{orderKey} ด้วย key ที่ขอไว้ล่วงหน้า
+    window.saveOrderWithKey = function(orderKey, orderData) {
+      return set(ref(database, 'orders/' + orderKey), orderData);
     };
 
     // FIX: database/ref/onValue เป็นตัวแปรใน module scope นี้เท่านั้น สคริปต์ตัวถัดไป
@@ -1355,6 +1374,12 @@
     };
     let customerInfo = { name: '', phone: '', orderType: 'dine_in' };
     let uploadedSlipBase64 = '';
+    let uploadedSlipFile = null; // ไฟล์รูปสลิปจริง ใช้อัปโหลดไป Storage
+
+    // วันที่ตามเวลาไทย รูปแบบ YYYY-MM-DD (ใช้เป็นฟิลด์ date ของออเดอร์ และชื่อโฟลเดอร์สลิป)
+    function bangkokDateKey(ms) {
+      return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok' }).format(new Date(ms));
+    }
 
     window.onload = function() {
       renderMenu();
@@ -1717,8 +1742,14 @@
         alert('กรุณากรอกเบอร์โทรศัพท์');
         return;
       }
+      if (!/^[0-9]{10}$/.test(phone)) {
+        alert('เบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลักเท่านั้น');
+        return;
+      }
 
-      customerInfo = { name, phone, orderType };
+      const payInput = document.querySelector('input[name="payMethod"]:checked');
+      const paymentMethod = payInput ? payInput.value : 'transfer';
+      customerInfo = { name, phone, orderType, paymentMethod };
       closeCustomerInfoModal();
       openCheckoutModal();
     }
@@ -1730,11 +1761,16 @@
       }
 
       const totalPrice = cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
+      const isCash = customerInfo.paymentMethod === 'cash';
       document.getElementById('checkoutTotalText').innerText = `ยอดชำระทั้งสิ้น: ${totalPrice} บาท`;
-
-      const promptpayNumber = '0819077556';
-      const qrUrl = `https://promptpay.io/${promptpayNumber}/${totalPrice}.png`;
-      document.getElementById('qrImage').src = qrUrl;
+      document.getElementById('checkoutTitle').innerText = isCash ? 'ชำระเงินสด' : 'ชำระเงินด้วย PromptPay';
+      document.getElementById('qrContainer').style.display = isCash ? 'none' : '';
+      document.getElementById('slipGroup').style.display = isCash ? 'none' : '';
+      if (!isCash) {
+        const promptpayNumber = '0819077556';
+        const qrUrl = `https://promptpay.io/${promptpayNumber}/${totalPrice}.png`;
+        document.getElementById('qrImage').src = qrUrl;
+      }
 
       document.getElementById('checkoutModal').classList.add('active');
     }
@@ -1756,6 +1792,7 @@
         return;
       }
 
+      uploadedSlipFile = file;
       const reader = new FileReader();
       reader.onload = function(e) {
         uploadedSlipBase64 = e.target.result;
@@ -1767,20 +1804,26 @@
     }
 
     async function confirmOrder() {
-      if (!uploadedSlipBase64) {
+      const isCash = customerInfo.paymentMethod === 'cash';
+      if (!isCash && !uploadedSlipBase64) {
         alert('กรุณาแนบสลิปโอนเงินก่อนยืนยันคำสั่งซื้อ');
         return;
       }
 
       const totalPrice = cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
+      const now = new Date();
+      const dateKey = bangkokDateKey(now.getTime()); // วันที่ของออเดอร์ (เวลาไทย)
+      const orderKey = window.newOrderKey(); // key ของออเดอร์ ใช้ตั้งชื่อไฟล์สลิปด้วย
       const orderData = {
         orderId: 'ORD-' + Math.floor(1000 + Math.random() * 9000),
-        timestamp: new Date().toLocaleString('th-TH'),
-        createdAt: Date.now(),
+        date: dateKey,
+        timestamp: now.toLocaleString('th-TH'),
+        createdAt: now.getTime(),
         customer_name: customerInfo.name,
         phone: customerInfo.phone,
         order_type: customerInfo.orderType,
-        slip_image: uploadedSlipBase64,
+        payment_method: isCash ? 'cash' : 'transfer',
+        slip_image: isCash ? null : uploadedSlipBase64, // สลิปเก็บเป็น base64 ในออเดอร์ (ไม่ใช้ Storage)
         items: [...cart],
         total: totalPrice,
         status: 'pending'
@@ -1822,17 +1865,13 @@
         confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังส่งออเดอร์...';
       }
 
-      // Push order to Firebase Realtime Database
-      let firebaseOrderKey = null;
-      if (typeof window.sendOrderToFirebase === 'function') {
-        try {
-          const orderRef = window.sendOrderToFirebase(orderData); // push() ให้ .key มาทันที ไม่ต้องรอ await
-          firebaseOrderKey = orderRef.key;
-          await orderRef; // รอให้เขียนข้อมูลเสร็จจริง
-          console.log('Order sent to Firebase successfully');
-        } catch (err) {
-          console.error('Error sending order to Firebase:', err);
-        }
+      // 3) บันทึกออเดอร์ลง Firebase ด้วย key เดิม (มีทั้ง date และ slip_path)
+      let firebaseOrderKey = orderKey;
+      try {
+        await window.saveOrderWithKey(orderKey, orderData);
+        console.log('Order saved to Firebase');
+      } catch (err) {
+        console.error('Error saving order to Firebase:', err);
       }
 
       if (confirmBtn) {
@@ -1860,9 +1899,11 @@
       cart = [];
       customerInfo = { name: '', phone: '', orderType: 'dine_in' };
       uploadedSlipBase64 = '';
+      uploadedSlipFile = null;
       document.getElementById('custNameInput').value = '';
       document.getElementById('custPhoneInput').value = '';
       document.getElementById('orderTypeDineIn').checked = true;
+      document.getElementById('payTransfer').checked = true;
       document.getElementById('slipInput').value = '';
       document.getElementById('slipPreview').src = '';
       document.getElementById('slipPreview').style.display = 'none';
